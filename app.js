@@ -6,8 +6,8 @@ const login  = require('./router/login')
 const  admin = require("firebase-admin");
 require('dotenv').config();
 
-
-var serviceAccount = require("./attendance-app-b667e-firebase-adminsdk-s4efb-b381a2c7c7.json");
+// const serviceAccount =JSON.parse( process.env.FireBase_Secret);
+ var serviceAccount = require("./attendance-app-b667e-firebase-adminsdk-s4efb-b381a2c7c7.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)

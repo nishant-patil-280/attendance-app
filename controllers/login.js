@@ -14,7 +14,7 @@ const loginuser  = async (req,res) =>{
         return;
     }
     try{
-        const [rows] = await req.app.locals.pool.execute('SELECT * FROM appuser WHERE EnrollID = ? AND Password = ?', [username, password]);
+        const [rows] = await req.app.locals.pool.execute('SELECT * FROM user WHERE EnrollID = ? AND Password = ?', [username, password]);
         if (rows.length === 1) {
              req.app.locals.admin.auth().createCustomToken(username).then((customToken)=>{
                 res.status(200).json({msg:'uer created',user : username,token:customToken});

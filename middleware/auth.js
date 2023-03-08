@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 module.exports = async (req, res, next) => {
   //const authHeader = req.headers.authorization; //same for firebase and old jwt
+  console.log(req.body);
   const idToken = req.headers.authorization.split('Bearer ')[1];
   if (!idToken) {
     return res.status(401).json({ message: 'Authorization header not found' });

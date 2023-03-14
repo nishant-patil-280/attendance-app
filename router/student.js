@@ -6,4 +6,5 @@ const authenticationMiddleWare = require('../middleware/auth');
 
 router.route('/').get(authenticationMiddleWare,getStudentDetails);
 
+
 module.exports = router;

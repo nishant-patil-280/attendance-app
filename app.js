@@ -17,7 +17,7 @@ admin.initializeApp({
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'root',
   database: 'attendance_db',
   waitForConnections: true,
   connectionLimit: 100,

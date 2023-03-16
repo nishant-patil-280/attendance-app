@@ -4,7 +4,8 @@ const router  = express.Router()
 const {getStudentDetails} = require('../controllers/students');
 const authenticationMiddleWare = require('../middleware/auth');
 
-router.route('/').get(authenticationMiddleWare,getStudentDetails);
+router.route('/getdetails').get(authenticationMiddleWare,getStudentDetails);
+// router.route('/stlectures').get(authenticationMiddleWare,getStudentLectures);
 
 
 module.exports = router;

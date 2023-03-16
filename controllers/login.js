@@ -6,9 +6,10 @@ const jwt  =  require('jsonwebtoken');
 //setup authentication so only the request with jwt can access the dashboard 
 
 
-const loginuser  = async (req,res) =>{
+const loginUser  = async (req,res,intParam) =>{
+
     const {userId,password } = req.body
-    console.log(userId,password);
+    console.log(userId,password,intParam);
    if(!userId || !password){
         //add error handling here
         res.sendStatus(401);
@@ -35,4 +36,4 @@ const loginuser  = async (req,res) =>{
     
 };
 
-module.exports = {loginuser};
+module.exports = {loginUser: loginUser};

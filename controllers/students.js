@@ -1,12 +1,6 @@
 const mysql = require("mysql2/promise");
 const jwt = require("jsonwebtoken");
 
-
-
-const mysql = require('mysql2/promise');
-const jwt  =  require('jsonwebtoken');
-
-
 //retrieve details of student
 const getStudentDetails = async (req, res) => {
   console.log("Student details called");

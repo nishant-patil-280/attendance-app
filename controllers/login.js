@@ -7,7 +7,22 @@ const jwt  =  require('jsonwebtoken');
 
 
 const loginUser  = async (req,res,intParam) =>{
+    var table_name
+    var EnrollID
+    if(intParam == 101){
+    table_name = 'adminuser';
+    EnrollID = 'AdminId'
+    };
+    if(intParam == 102){
+      table_name = 'studuser'
+      EnrollID = 'StudId'
+    };
+      if(intParam == 103){
+        table_name = 'profuser'
+        EnrollID = 'ProfId'
+      };
 
+    //based upon the intParam redirect to different tables by using string interpolation
     const {userId,password } = req.body
     console.log(userId,password,intParam);
    if(!userId || !password){
@@ -16,7 +31,7 @@ const loginUser  = async (req,res,intParam) =>{
         return;
     }
     try{
-        const [rows] = await req.app.locals.pool.execute('SELECT * FROM appuser WHERE EnrollID = ? AND Password = ?', [userId, password]);
+        const [rows] = await req.app.locals.pool.execute('SELECT * FROM '  + table_name +  ' WHERE ' +  EnrollID  +' = ? AND Password = ?', [userId, password]);
         if (rows.length === 1) {
              req.app.locals.admin.auth().createCustomToken(userId).then((customToken)=>{
                 res.status(200).json({message:'user authenticated,Token created',user : userId,token:customToken});

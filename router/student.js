@@ -2,6 +2,7 @@ const express  =require('express');
 const router  = express.Router()
 
 const {getStudentDetails} = require('../controllers/students');
+// const {getStudentLectures} = require('../controllers/students');
 const authenticationMiddleWare = require('../middleware/auth');
 
 router.route('/getdetails').get(authenticationMiddleWare,getStudentDetails);

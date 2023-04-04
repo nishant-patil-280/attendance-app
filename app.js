@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require("fs");
 const app = express();
 const mysql = require("mysql2/promise");
 const students = require("./router/student");
@@ -42,7 +43,8 @@ pool.on("error", (err) => {
 //making pool connection available to all paths
 app.locals.pool = pool;
 app.locals.admin = admin;
-
+app.locals.firebaseDb = firebaseDb;
+app.locals.batch = batch;
 // middleware
 app.use(express.json());
 
@@ -50,8 +52,8 @@ app.use(express.json());
 app.use("/api/v1/login", login);
 app.use("/api/v1/students", students);
 
-/////////////////////////////////==================================
-async function getTodaysTimeTable(app) {
+//script to generate timetable daily
+async function getTodaysTimeTable() {
   let date = new Date();
   var today = "Tuesday"; //replace here code to get todays timetable
   var year = date.getFullYear();
@@ -103,7 +105,7 @@ async function getTodaysTimeTable(app) {
       console.log("4" + studentIds);
       studentIds.forEach((student) => {
         const { StudID, status } = student;
-        const docRef = firebaseDb
+        const docRef = app.locals.firebaseDb
           .collection(`${yearRange}`)
           .doc(`${Cname}`)
           .collection(`${AcademicYear}`)
@@ -114,7 +116,6 @@ async function getTodaysTimeTable(app) {
           .doc(`${StudID}`);
 
         batch.set(docRef, { status });
-        
       });
       batch
         .commit()
@@ -131,44 +132,52 @@ async function getTodaysTimeTable(app) {
   }
 }
 
-async function generateLectures(app) {
-  console.log(new Date().toString());
-  await getTodaysTimeTable(app);
-  //don't touch below code
-  //Below code is for script
-  const today = new Date();
-  const data = {
-    lastRunDate: today.toISOString().slice(0, 10),
-  };
-  // fs.writeFileSync("lastrun.txt", JSON.stringify(data));
-}
-
-function checkRunTime(app) {
-  const checkStart = new Date();
-  const checkEnd = new Date();
-  checkStart.setHours(0, 0, 0, 0); // set to 12am
-  checkEnd.setHours(3, 0, 0, 0); // set to 3am
+async function checkRunTime() {
   const now = new Date();
-  // if (now >= checkStart && now <= checkEnd) {
-  //  const lastRunData = fs.readFileSync(l_run);
-  //  const lastRun = JSON.parse(lastRunData);
-  //  const lastRunDate = new Date(lastRun.lastRunDate);
-  //  const timeDiff = now.getTime() - lastRunDate.getTime();
-  // const hoursDiff = 26
-  //timeDiff / (1000 * 3600);
-  // if (hoursDiff >= 24) {
-  getTodaysTimeTable();
-  //   }
-  // }
+  const currentHour = now.getHours();
+
+  // Read the last run time from the file
+  let lastRunTime = null;
+  try {
+    lastRunTime = fs.readFileSync("Lecture.txt", "utf8");
+  } catch (err) {
+    console.error(`Error reading last run time file: ${err}`);
+  }
+
+  if (!lastRunTime || now - new Date(lastRunTime) >= 24 * 60 * 60 * 1000) {
+    // If the last run time is not within 24 hours, run the script and update the last run time
+    await getTodaysTimeTable();
+    fs.writeFile("Lecture.txt", now.toISOString(), (err) => {
+      if (err) {
+        console.error(`Error updating last run time file: ${err}`);
+      }
+    });
+  } else if (currentHour >= 0 && currentHour < 3) {
+    // If the current time is between 12 am and 3 am, and the last run time is within 24 hours, run the script
+    await getTodaysTimeTable();
+  } else {
+    // If the current time is not between 12 am and 3 am, wait until the next day at 12 am to run the script
+    const timeUntilNextRun = new Date();
+    timeUntilNextRun.setDate(timeUntilNextRun.getDate() + 1);
+    timeUntilNextRun.setHours(0, 0, 0, 0);
+    const timeToWait = timeUntilNextRun - now;
+
+    console.log(`Current time is ${now}, waiting ${timeToWait / (60 * 1000)} minutes until next run...`);
+
+    setTimeout(() => {
+      checkRunTime();
+    }, timeToWait);
+  }
 }
 
-// module.exports = function(app) {
-checkRunTime(app);
-setInterval(() => {
-  checkRunTime(app);
-}, 7200000);
-// };
-////////////////================================================================
-const port = 3000;
+checkRunTime();
 
+setInterval(() => {
+  checkRunTime();
+}, 60 * 60 * 1000); 
+
+
+//setting port
+const port = 3000;
+//starting the app
 app.listen(port, console.log(`Server is listening on port ${port}...`));

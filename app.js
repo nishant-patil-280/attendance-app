@@ -9,6 +9,7 @@ require("dotenv").config();
 
 // const serviceAccount =JSON.parse( process.env.FireBase_Secret);
 var serviceAccount = require("./attendance-app-b667e-firebase-adminsdk-s4efb-b381a2c7c7.json");
+const { log } = require("console");
 //intializing firebase app
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -64,6 +65,7 @@ async function getTodaysTimeTable() {
   } else {
     yearRange = `${year - 1}-${year}`;
   }
+  const timestamp = admin.firestore.FieldValue.serverTimestamp();;
   console.log(year);
   console.log(yearRange);
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -95,6 +97,14 @@ async function getTodaysTimeTable() {
         "SELECT StudID, Firstname, Lastname, RollNo, Division, Cname, Sem, AcademicYear FROM StudDetails WHERE Division = ? AND Cname = ? AND Sem = ? AND AcademicYear = ?",
         [Div, Cname, Sem, AcademicYear]
       );
+      const [profName] = await pool.execute(
+        "SELECT Firstname, Lastname FROM ProfDetails WHERE ProfID = ? ",
+        [ProfId]
+      );
+      console.log(profName);
+      console.log(profName[0].Firstname);
+      ProfId2 =
+        ProfId + "-" + profName[0].Firstname + " " + profName[0].Lastname;
       if (rowsStudent.length == 0) {
         continue;
       }
@@ -102,18 +112,45 @@ async function getTodaysTimeTable() {
       rowsStudent.forEach((StudentRow) => {
         studentIds.push({ StudID: StudentRow.StudID, status: false });
       });
+      const yearRangeRef = app.locals.firebaseDb.collection(yearRange);
+      yearRangeRef
+        .doc(Cname)
+        .set({ timestamp })
+        .then(() => {
+          log(Div);
+          log(AcademicYear);
+          return yearRangeRef
+            .doc(Cname)
+            .collection('${AcademicYear}')
+            .doc(Div)
+            .set({ timestamp });
+        })
+        .then(() => {
+          log("===============");
+          return yearRangeRef
+            .doc(Cname)
+            .collection(`${AcademicYear}`)
+            .doc(Div)
+            .collection(dateFormat)
+            .doc(`${ProfId2}`)
+            .set({ sub: SubName });
+        })
+        .catch((error) => {
+          console.error("Error adding timestamp: ", error);
+        });
+
       console.log("4" + studentIds);
       studentIds.forEach((student) => {
         const { StudID, status } = student;
         const docRef = app.locals.firebaseDb
-          .collection(`${yearRange}`)
-          .doc(`${Cname}`)
+          .collection(yearRange)
+          .doc(Cname)
           .collection(`${AcademicYear}`)
-          .doc(`${Div}`)
-          .collection(`${dateFormat}`)
-          .doc(`${ProfId}`)
-          .collection(`${SubName}`)
-          .doc(`${StudID}`);
+          .doc(Div)
+          .collection(dateFormat)
+          .doc(ProfId2)
+          .collection(SubName)
+          .doc(StudID);
 
         batch.set(docRef, { status });
       });
@@ -131,6 +168,91 @@ async function getTodaysTimeTable() {
     console.log(err);
   }
 }
+
+//===============================
+// async function getTodaysTimeTable() {
+//   let date = new Date();
+//   var today = "Tuesday"; //replace here code to get todays timetable
+//   var year = date.getFullYear();
+//   const isAfterJuly1 = date.getMonth() >= 6;
+//   let yearRange;
+//   if (isAfterJuly1) {
+//     yearRange = `${year}-${year + 1}`;
+//   } else {
+//     yearRange = `${year - 1}-${year}`;
+//   }
+//   console.log(year);
+//   console.log(yearRange);
+//   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+//   var dateFormat = date.toLocaleDateString("en-US", options).toString();
+//   console.log("1" + today);
+//   dateFormat = dateFormat.replace(/\//g, "-");
+//   console.log(dateFormat);
+//   try {
+//     let index = 0;
+//     const [rows, fields] = await pool.execute(
+//       "SELECT Timetable.Division, Timetable.AcademicYear, Timetable.Sem, Timetable.Day, Timetable.StartTime, Timetable.EndTime, Subject.SubName, Subject.Cname, Timetable.ProfID FROM Timetable JOIN Subject ON Timetable.SubID = Subject.SubID WHERE Timetable.Day = ?",
+//       [today]
+//     );
+//     console.log("2" + rows);
+//     console.log("3" + rows.length);
+//     while (index < rows.length) {
+//       Div = rows[index].Division;
+//       console.log(Div);
+//       Cname = rows[index].Cname;
+//       console.log(Cname);
+//       Sem = rows[index].Sem;
+//       console.log(Sem);
+//       AcademicYear = rows[index].AcademicYear;
+//       console.log(AcademicYear);
+//       ProfId = rows[index].ProfID;
+//       SubName = rows[index].SubName;
+//       console.log(SubName);
+//       const [rowsStudent] = await pool.execute(
+//         "SELECT StudID, Firstname, Lastname, RollNo, Division, Cname, Sem, AcademicYear FROM StudDetails WHERE Division = ? AND Cname = ? AND Sem = ? AND AcademicYear = ?",
+//         [Div, Cname, Sem, AcademicYear]
+//       );
+//       const [profName] = await pool.execute("SELECT Firstname, Lastname FROM ProfDetails WHERE ProfID = ? ",
+//       [ProfId]);
+//       console.log(profName);
+//       console.log(profName[0].Firstname);
+//       ProfId2 =ProfId + '-' + profName[0].Firstname  +' '+ profName[0].Lastname;
+//       if (rowsStudent.length == 0) {
+//         continue;
+//       }
+//       let studentIds = [{ StudID: "STUD25", status: false }];
+//       rowsStudent.forEach((StudentRow) => {
+//         studentIds.push({ StudID: StudentRow.StudID, status: false });
+//       });
+//       console.log("4" + studentIds);
+//       studentIds.forEach((student) => {
+//         const { StudID, status } = student;
+//         const docRef = app.locals.firebaseDb
+//           .collection(`${yearRange}`)
+//           .doc(`${Cname}`)
+//           .collection(`${AcademicYear}`)
+//           .doc(`${Div}`)
+//           .collection(`${dateFormat}`)
+//           .doc(`${ProfId2}`)
+//           .collection(`${SubName}`)
+//           .doc(`${StudID}`);
+
+//         batch.set(docRef, { status });
+//       });
+//       batch
+//         .commit()
+//         .then(() => {
+//           console.log("Batch write successful!");
+//         })
+//         .catch((error) => {
+//           console.error("Error writing batch: ", error);
+//         });
+//       index++;
+//     }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
 
 async function checkRunTime() {
   const now = new Date();
@@ -162,7 +284,11 @@ async function checkRunTime() {
     timeUntilNextRun.setHours(0, 0, 0, 0);
     const timeToWait = timeUntilNextRun - now;
 
-    console.log(`Current time is ${now}, waiting ${timeToWait / (60 * 1000)} minutes until next run...`);
+    console.log(
+      `Current time is ${now}, waiting ${
+        timeToWait / (60 * 1000)
+      } minutes until next run...`
+    );
 
     setTimeout(() => {
       checkRunTime();
@@ -174,8 +300,7 @@ checkRunTime();
 
 setInterval(() => {
   checkRunTime();
-}, 60 * 60 * 1000); 
-
+}, 60 * 60 * 1000);
 
 //setting port
 const port = 3000;

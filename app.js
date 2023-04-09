@@ -16,8 +16,6 @@ admin.initializeApp({
 });
 //initializing firbase firestore database
 const firebaseDb = admin.firestore();
-//used fot atomic batched writes to database
-const batch = firebaseDb.batch();
 //connecting mysql -used xampp mysl
 const pool = mysql.createPool({
   host: "localhost",
@@ -45,7 +43,6 @@ pool.on("error", (err) => {
 app.locals.pool = pool;
 app.locals.admin = admin;
 app.locals.firebaseDb = firebaseDb;
-app.locals.batch = batch;
 // middleware
 app.use(express.json());
 
@@ -65,7 +62,7 @@ async function getTodaysTimeTable() {
   } else {
     yearRange = `${year - 1}-${year}`;
   }
-  const timestamp = admin.firestore.FieldValue.serverTimestamp();;
+  const timestamp = admin.firestore.FieldValue.serverTimestamp();
   console.log(year);
   console.log(yearRange);
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -76,12 +73,16 @@ async function getTodaysTimeTable() {
   try {
     let index = 0;
     const [rows, fields] = await pool.execute(
-      "SELECT Timetable.Division, Timetable.AcademicYear, Timetable.Sem, Timetable.Day, Timetable.StartTime, Timetable.EndTime, Subject.SubName, Subject.Cname, Timetable.ProfID FROM Timetable JOIN Subject ON Timetable.SubID = Subject.SubID WHERE Timetable.Day = ?",
+      "SELECT TimeTable.RoomNo, Timetable.Division, Timetable.AcademicYear, Timetable.Sem, Timetable.Day, Timetable.StartTime, Timetable.EndTime, Subject.SubName, Subject.Cname, Timetable.ProfID FROM Timetable JOIN Subject ON Timetable.SubID = Subject.SubID WHERE Timetable.Day = ?",
       [today]
     );
-    console.log("2" + rows);
-    console.log("3" + rows.length);
+    console.log("Total rows today:" + rows.length);
     while (index < rows.length) {
+      //used fot atomic batched writes to database
+      const batch = firebaseDb.batch();
+      console.log("iteration no: " + index);
+      RoomNo = rows[index].RoomNo;
+      console.log(RoomNo);
       Div = rows[index].Division;
       console.log(Div);
       Cname = rows[index].Cname;
@@ -93,6 +94,7 @@ async function getTodaysTimeTable() {
       ProfId = rows[index].ProfID;
       SubName = rows[index].SubName;
       console.log(SubName);
+      Time = rows[index].StartTime + "-" + rows[index].EndTime;
       const [rowsStudent] = await pool.execute(
         "SELECT StudID, Firstname, Lastname, RollNo, Division, Cname, Sem, AcademicYear FROM StudDetails WHERE Division = ? AND Cname = ? AND Sem = ? AND AcademicYear = ?",
         [Div, Cname, Sem, AcademicYear]
@@ -108,12 +110,12 @@ async function getTodaysTimeTable() {
       if (rowsStudent.length == 0) {
         continue;
       }
-      let studentIds = [{ StudID: "STUD25", status: false }];
+      let studentIds = [{ StudID: "STUD965", status: false }];
       rowsStudent.forEach((StudentRow) => {
         studentIds.push({ StudID: StudentRow.StudID, status: false });
       });
       const yearRangeRef = app.locals.firebaseDb.collection(yearRange);
-      yearRangeRef
+      await yearRangeRef
         .doc(Cname)
         .set({ timestamp })
         .then(() => {
@@ -121,7 +123,7 @@ async function getTodaysTimeTable() {
           log(AcademicYear);
           return yearRangeRef
             .doc(Cname)
-            .collection('${AcademicYear}')
+            .collection(`${AcademicYear}`)
             .doc(Div)
             .set({ timestamp });
         })
@@ -133,7 +135,7 @@ async function getTodaysTimeTable() {
             .doc(Div)
             .collection(dateFormat)
             .doc(`${ProfId2}`)
-            .set({ sub: SubName });
+            .set({ sub: SubName, time: Time, room: RoomNo });
         })
         .catch((error) => {
           console.error("Error adding timestamp: ", error);
@@ -154,7 +156,7 @@ async function getTodaysTimeTable() {
 
         batch.set(docRef, { status });
       });
-      batch
+      await batch
         .commit()
         .then(() => {
           console.log("Batch write successful!");

@@ -1,0 +1,239 @@
+<%- include("partials/header"); -%>
+
+	<div class="wrapper d-flex align-items-stretch" isClosed=true>
+		<nav id="sidebar" class="inactive">
+			<div class="custom-menu">
+				<button type="button" id="sidebarCollapse" class="btn btn-primary">
+					<i class="fa fa-bars"></i>
+					<span class="sr-only">Toggle Menu</span>
+				</button>
+			</div>
+			<div class="p-4">
+				<h1><a href="/api/v1/admin/home" class="logo">Terna</a></h1>
+				<ul class="list-unstyled components mb-5">
+					<li>
+						<a href="/api/v1/admin/home"><span class="fa fa-home mr-3"></span> Home</a>
+					</li>
+					<li>
+						<a href="/api/v1/admin/editStudents"><span class="fa fa-user mr-3"></span> Edit Students</a>
+					</li>
+					<li>
+						<a href="/api/v1/admin/editTeachers"><span class="fa fa-user mr-3"></span> Edit Teachers</a>
+					</li>
+					<li>
+						<a href="/api/v1/admin/editTimetable"><span class="fa fa-sticky-note mr-3"></span> Edit
+							Timetable</a>
+					</li>
+					<li>
+						<a href="/api/v1/admin/contact"><span class="fa fa-paper-plane mr-3"></span> Contact</a>
+					</li>
+				</ul>
+
+				<!-- <div class="mb-5">
+						<h3 class="h6 mb-3">Subscribe for newsletter</h3>
+						<form action="#" class="subscribe-form">
+	            <div class="form-group d-flex">
+	            	<div class="icon"><span class="icon-paper-plane"></span></div>
+	              <input type="text" class="form-control" placeholder="Enter Email Address">
+	            </div>
+	          </form>
+					</div> -->
+
+				<div class="footer">
+					<p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+						Copyright &copy;
+						<script>document.write(new Date().getFullYear());</script> All rights reserved | </a>
+						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+					</p>
+				</div>
+
+			</div>
+		</nav>
+
+		<!-- Page Content  -->
+		<div id="content" class="p-4 p-md-5 pt-5">
+			<h2 class="mb-4">Edit Timetable Details</h2>
+
+			<div>
+				<form id="searchForm" class="example" action="/api/v1/admin/searchTimetable" method="post">
+					<input type="text" placeholder="Search by Lecture ID..." name="search">
+					<button id="searchbutton" form="searchForm" type="submit"><i class="fa fa-search"></i></button>
+				</form>
+			</div>
+			<form action="/api/v1/admin/saveTimetabletDetails" method="post" id="saveTimetabletDetails">
+				<div>
+
+
+					<table class="table">
+						<thead>
+							<tr>
+								<th>LecID </th>
+								<th>Div</th>
+								<th>Cname</th>
+								<th>Year</th>
+								<th>Sem </th>
+								<th>Day</th>
+								<th>StartTime </th>
+								<!-- <form action="/api/v1/admin/searchStudents/sem" method="post" id="semForm">
+                    <select name="sem" id="sem" form="semForm">
+                      <option value="8"></option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                    </select>
+                  </form> -->
+
+								<th>EndTime </th>
+								<!-- <form action="/api/v1/admin/searchStudents/branch" method="post" id="branchForm">
+                    <select name="branch" id="branch" form="branchForm">
+                      <option value="Computer Science"></option>
+                      <option value="Computer Science">Comps</option>
+                      <option value="Information Technology">IT</option>
+                    </select>
+                  </form> -->
+								<th>SubID</th>
+								<form action="/api/v1/admin/searchStudents/sem" method="post" id="semForm">
+                    
+								</form>
+							</tr>
+						</thead>
+						<tbody>
+							<% if(data.length){ for(var i=0; i< data.length; i++) {%>
+								<tr>
+
+									<th scope="row"> <input name="LecID" type="text" class="form-control" <%=readonly %>
+										value="<%= data[i].LecID%>"
+											style="border: none; border-color: transparent;"> </input></th>
+
+									<td><input name="Division" type="text" class="form-control" <%=readonly %> 
+										value="<%= data[i].Division%>"
+											style="border: none; border-color: transparent;"> </input>
+									</td>
+
+									<td><input name="Cname" type="text" class="form-control" <%=readonly %> value="<%=
+											data[i].Cname%>"
+											style="border: none; border-color: transparent;"> </input></td>
+
+									<td><input name="AcademicYear" type="text" class="form-control" <%=readonly %>
+										value="<%= data[i].AcademicYear%>"
+											style="border: none; border-color: transparent;"> </input></td>
+
+									<td><input name="Sem" type="text" class="form-control" <%=readonly %> value="<%=
+											data[i].Sem%>"
+											style="border: none; border-color: transparent;"> </input></td>
+
+									<td><input name="Day" type="text" class="form-control" <%=readonly %> value="<%=
+											data[i].Day%>"
+											style="border: none; border-color: transparent;"> </input></td>
+
+									<td><input name="StartTime" branch type="text" class="form-control" <%=readonly %>
+										value="<%= data[i].StartTime%>"
+											style="border: none; border-color: transparent;"> </input></td>
+
+									<td><input name="EndTime" branch type="text" class="form-control" <%=readonly %>
+										value="<%= data[i].EndTime%>"
+											style="border: none; border-color: transparent;"> </input></td>
+									<td><input name="SubID" branch type="text" class="form-control" <%=readonly %>
+										value="<%= data[i].SubID%>"
+											style="border: none; border-color: transparent;"> </input></td>
+
+
+
+									<% } %>
+										<form action="/api/v1/admin/editTimetableDetails/edit" method="post"
+											id="editStudentDetails">
+											<button type="submit" class="btn btn-link btn-lg" form="editStudentDetails">
+												<span class="glyphicon glyphicon-edit"></span> Edit
+											</button>
+										</form>
+
+										<form action="/api/v1/admin/addTimetableDetails" method="post"
+											id="addStudentDetails">
+											<button type="submit" class="btn btn-link btn-lg" form="addStudentDetails">
+												<span class="glyphicon glyphicon-edit"></span> Add
+											</button>
+										</form>
+
+										<form action="/api/v1/admin/deleteTimetableDetails" method="post"
+											id="deleteStudentDetails" data-="hello">
+											<button type="submit" class="btn btn-link btn-lg"
+												form="deleteStudentDetails">
+												<span class="glyphicon glyphicon-edit"></span> Delete
+											</button>
+										</form>
+
+										<button type="submit" form="saveStudentDetails" style="font-size:24px"
+											<%=disabled %> >
+											<i class="fa fa-save"></i></button>
+										<% }else{ %>
+											<form action="/api/v1/admin/editTimetableDetails/edit" method="post"
+												id="editStudentDetails">
+												<button type="submit" class="btn btn-link btn-lg"
+													form="editStudentDetails">
+													<span class="glyphicon glyphicon-edit"></span> Edit
+												</button>
+											</form>
+
+											<form action="/api/v1/admin/addTimetableDetails" method="post"
+												id="addStudentDetails">
+												<button type="submit" class="btn btn-link btn-lg"
+													form="addStudentDetails">
+													<span class="glyphicon glyphicon-edit"></span> Add
+												</button>
+											</form>
+
+											<form action="/api/v1/admin/deleteTimetableDetails" method="post"
+												id="deleteStudentDetails" data-="hello">
+												<button type="submit" class="btn btn-link btn-lg"
+													form="deleteStudentDetails">
+													<span class="glyphicon glyphicon-edit"></span> Delete
+												</button>
+											</form>
+
+											<button type="submit" form="saveTimetableDetails" style="font-size:24px"
+												<%=disabled %> >
+												<i class="fa fa-save"></i></button>
+								</tr>
+
+								<tr>
+									<td>
+										<%= content %>
+									</td>
+								</tr>
+								<% } %>
+						</tbody>
+					</table>
+					<!-- <p id="demo"></p> -->
+					<!-- <%= JSON.stringify(data) %> -->
+				</div>
+			</form>
+		</div>
+	</div>
+
+
+
+
+	<script>
+		// const divDrop = document.getElementById("divisionselect");
+		// divDrop.addEventListener("change", function () {
+		//   document.getElementById("form38").submit();
+		// });
+
+		const semDrop = document.getElementById("sem");
+		semDrop.addEventListener("change", function () {
+			document.getElementById("semForm").submit();
+		});
+
+		const branchDrop = document.getElementById("branch");
+		branchDrop.addEventListener("change", function () {
+			document.getElementById("branchForm").submit();
+		});
+	</script>
+
+
+	<%- include("partials/footer"); -%>

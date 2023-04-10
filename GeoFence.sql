@@ -1,3 +1,4 @@
+-- Active: 1678263946852@@127.0.0.1@3306@attendance_db
 create database GeoFence;
 use GeoFence;
 
@@ -71,7 +72,7 @@ values
 ('PROF08', 'Deepak', 'Shinde'),
 ('PROF09', 'Pooja', 'Shah'),
 ('PROF10', 'Kunal', 'Chopra'),
-('PROF11', 'Anjali', 'Pandey'),
+('PROF11', 'Anjali', 'Pandey');
 
 #Creating Subject table
 

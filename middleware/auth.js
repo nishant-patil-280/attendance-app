@@ -1,5 +1,4 @@
 
-
 module.exports = async (req, res, next) => {
   const authHeader = req.headers.authorization; //same for firebase and old jwt
   const idToken = req.headers.authorization.split('Bearer ')[1];

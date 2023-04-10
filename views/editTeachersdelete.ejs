@@ -1,0 +1,157 @@
+<%- include("partials/header"); -%>
+		
+		<div class="wrapper d-flex align-items-stretch"isClosed=true>
+			<nav id="sidebar" class="inactive">
+				<div class="custom-menu">
+					<button type="button" id="sidebarCollapse" class="btn btn-primary">
+	          <i class="fa fa-bars"></i>
+	          <span class="sr-only">Toggle Menu</span>
+	        </button>
+        </div>
+				<div class="p-4">
+		  		<h1><a href="/api/v1/admin/home" class="logo">Terna</a></h1>
+	        <ul class="list-unstyled components mb-5">
+	          <li>
+	            <a href="/api/v1/admin/home"><span class="fa fa-home mr-3"></span> Home</a>
+	          </li>
+	          <li>
+	              <a href="/api/v1/admin/editStudents"><span class="fa fa-user mr-3"></span> Edit Students</a>
+	          </li>
+	          <li>
+              <a href="/api/v1/admin/editTeachers"><span class="fa fa-user mr-3"></span> Edit Teachers</a>
+	          </li>
+	          <li>
+              <a href="/api/v1/admin/editTimetable"><span class="fa fa-sticky-note mr-3"></span> Edit Timetable</a>
+	          </li>
+	          <li>
+              <a href="/api/v1/admin/contact"><span class="fa fa-paper-plane mr-3"></span> Contact</a>
+	          </li>
+	        </ul>
+
+	        <!-- <div class="mb-5">
+						<h3 class="h6 mb-3">Subscribe for newsletter</h3>
+						<form action="#" class="subscribe-form">
+	            <div class="form-group d-flex">
+	            	<div class="icon"><span class="icon-paper-plane"></span></div>
+	              <input type="text" class="form-control" placeholder="Enter Email Address">
+	            </div>
+	          </form>
+					</div> -->
+
+	        <div class="footer">
+	        	<p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+						  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib.com</a>
+						  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+	        </div>
+
+	      </div>
+    	</nav>
+
+        <!-- Page Content  -->
+      <div id="content" class="p-4 p-md-5 pt-5">
+        <h2 class="mb-4">Delete Teacher Details</h2>
+
+        <div>
+            <form id="searchForm" class="example" action="/api/v1/admin/searchTeachers/delete" method="post">
+                <input type="text" placeholder="Search by Student ID..." name="search">
+                <button id="searchbutton" form="searchForm" type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+    <form action="/api/v1/admin/saveTeacherDetails/delete" method="post" id="saveTeacherDetails">
+        <div>
+
+            
+            <form action="/api/v1/admin/addStudentDetails" method="post" id="addStudentDetails"></form>
+            <form action="/api/v1/admin/deleteTeacherDetails" method="post" id="deleteTeacherDetails" data-="hello"></form>
+            
+            
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                      <th>ProfID </th>
+                      <th>Firstname</th>
+                      <th>Lastname</th>
+                      <th>Birthdate</th>
+                      <th>Phno</th>
+                      
+                       
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if(data.length){ for(var i = 0; i< data.length; i++) {%>
+                    <tr>
+                        <th scope="row"> <input required name="profid" type="text" class="form-control" <%= readonly %> value="<%= data[i].ProfID %>" 
+                            style="border: none; border-color: transparent;">  </input></th>
+    
+                          <td> <input required name="firstname" type="text" class="form-control" <%= readonly %> value="<%= data[i].Firstname%>" 
+                          style="border: none; border-color: transparent;">  </input></td>
+    
+                          <td><input required name="lastname" type="text" class="form-control" <%= readonly %> value="<%= data[i].Lastname%>" 
+                            style="border: none; border-color: transparent;">  </input></td>
+    
+                          <td><input required name="birthdate" type="text" class="form-control" <%= readonly %> value="<%= data[i].Birthdate%>" 
+                            style="border: none; border-color: transparent;">  </input></td>
+    
+                          <td><input required name="phno" type="text" class="form-control" <%= readonly %> value="<%= data[i].Phno%>" 
+                            style="border: none; border-color: transparent;">  </input></td>
+
+                    
+                    <% }  %>
+                    <!-- <form action="/api/v1/admin/editStudentDetails" method="post" id="editStudentDetails">
+                    <button type="submit" class="btn btn-link btn-lg" form="editStudentDetails">
+                        <span class="glyphicon glyphicon-edit"></span> Edit
+                    </button></form>
+                    <button type="submit" class="btn btn-link btn-lg" form="addStudentDetails">
+                        <span class="glyphicon glyphicon-edit"></span> Add
+                    </button> -->
+                    <button type="submit" class="btn btn-link btn-lg" form="deleteTeacherDetails">
+                        <span class="glyphicon glyphicon-edit"></span> Delete
+                    </button>
+                    <button type="submit" form="saveTeacherDetails" style="font-size:24px" <%= disabled %> >
+                        <i class="fa fa-save"></i></button>
+                    <% }else{ %> 
+                        <!-- <form action="/api/v1/admin/editStudentDetails" method="post" id="editStudentDetails">
+                        <button type="submit" class="btn btn-link btn-lg" form="editStudentDetails">
+                            <span class="glyphicon glyphicon-edit"></span> Edit
+                        </button></form>
+                        <button type="submit" class="btn btn-link btn-lg" form="addStudentDetails">
+                            <span class="glyphicon glyphicon-edit"></span> Add
+                        </button> -->
+                        <button type="submit" class="btn btn-link btn-lg" form="deleteTeacherDetails">
+                            <span class="glyphicon glyphicon-edit"></span> Delete
+                        </button>
+                        <button type="submit" form="saveTeacherDetails" style="font-size:24px" <%= disabled %> >
+                            <i class="fa fa-save"></i></button>
+                    </tr>
+
+                    <tr>
+                      <td><%= content %></td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+            </table>
+            <!-- <p id="demo"></p> -->
+            <!-- <%= JSON.stringify(data) %> -->
+        </div>
+    </form>
+      </div>
+      </div>
+	    </div>
+    
+
+
+        <script>
+            const semDrop = document.getElementById("sem");
+            semDrop.addEventListener("change", function() {
+                document.getElementById("semForm").submit();
+            });
+
+            const branchDrop = document.getElementById("branch");
+            branchDrop.addEventListener("change", function() {
+                document.getElementById("branchForm").submit();
+            });
+        </script>
+
+
+<%- include("partials/footer"); -%>

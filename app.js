@@ -3,6 +3,7 @@ const fs = require("fs");
 const app = express();
 const mysql = require("mysql2/promise");
 const students = require("./router/student");
+const professors = require("./router/professor");
 const login = require("./router/login");
 const admin_2 = require("./router/admin");
 const admin = require("firebase-admin");
@@ -19,14 +20,13 @@ app.use(express.static("public"));
 
 // const serviceAccount =JSON.parse( process.env.FireBase_Secret);
 var serviceAccount = require("./attendance-app-b667e-firebase-adminsdk-s4efb-b381a2c7c7.json");
+const { log } = require("console");
 //intializing firebase app
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 //initializing firbase firestore database
 const firebaseDb = admin.firestore();
-//used fot atomic batched writes to database
-const batch = firebaseDb.batch();
 //connecting mysql -used xampp mysl
 const pool = mysql.createPool({
   host: "localhost",
@@ -54,13 +54,13 @@ pool.on("error", (err) => {
 app.locals.pool = pool;
 app.locals.admin = admin;
 app.locals.firebaseDb = firebaseDb;
-app.locals.batch = batch;
 // middleware
 app.use(express.json());
 
 //routes
 app.use("/api/v1/login", login);
 app.use("/api/v1/students", students);
+app.use("/api/v1/professors",professors)
 app.use("/api/v1/admin", admin_2);
 
 //script to generate timetable daily
@@ -75,6 +75,7 @@ async function getTodaysTimeTable() {
   } else {
     yearRange = `${year - 1}-${year}`;
   }
+  const timestamp = admin.firestore.FieldValue.serverTimestamp();
   console.log(year);
   console.log(yearRange);
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -85,12 +86,16 @@ async function getTodaysTimeTable() {
   try {
     let index = 0;
     const [rows, fields] = await pool.execute(
-      "SELECT Timetable.Division, Timetable.AcademicYear, Timetable.Sem, Timetable.Day, Timetable.StartTime, Timetable.EndTime, Subject.SubName, Subject.Cname, Timetable.ProfID FROM Timetable JOIN Subject ON Timetable.SubID = Subject.SubID WHERE Timetable.Day = ?",
+      "SELECT TimeTable.RoomNo, Timetable.Division, Timetable.AcademicYear, Timetable.Sem, Timetable.Day, Timetable.StartTime, Timetable.EndTime, Subject.SubName, Subject.Cname, Timetable.ProfID FROM Timetable JOIN Subject ON Timetable.SubID = Subject.SubID WHERE Timetable.Day = ?",
       [today]
     );
-    console.log("2" + rows);
-    console.log("3" + rows.length);
+    console.log("Total rows today:" + rows.length);
     while (index < rows.length) {
+      //used fot atomic batched writes to database
+      const batch = firebaseDb.batch();
+      console.log("iteration no: " + index);
+      RoomNo = rows[index].RoomNo;
+      console.log(RoomNo);
       Div = rows[index].Division;
       console.log(Div);
       Cname = rows[index].Cname;
@@ -102,33 +107,69 @@ async function getTodaysTimeTable() {
       ProfId = rows[index].ProfID;
       SubName = rows[index].SubName;
       console.log(SubName);
+      Time = rows[index].StartTime + "-" + rows[index].EndTime;
       const [rowsStudent] = await pool.execute(
         "SELECT StudID, Firstname, Lastname, RollNo, Division, Cname, Sem, AcademicYear FROM StudDetails WHERE Division = ? AND Cname = ? AND Sem = ? AND AcademicYear = ?",
         [Div, Cname, Sem, AcademicYear]
       );
+      const [profName] = await pool.execute(
+        "SELECT Firstname, Lastname FROM ProfDetails WHERE ProfID = ? ",
+        [ProfId]
+      );
+      console.log(profName);
+      console.log(profName[0].Firstname);
+      ProfId2 =
+        ProfId + "-" + profName[0].Firstname + " " + profName[0].Lastname;
       if (rowsStudent.length == 0) {
         continue;
       }
-      let studentIds = [{ StudID: "STUD25", status: false }];
+      let studentIds = [{ StudID: "STUD965", status: false }];
       rowsStudent.forEach((StudentRow) => {
         studentIds.push({ StudID: StudentRow.StudID, status: false });
       });
+      const yearRangeRef = app.locals.firebaseDb.collection(yearRange);
+      await yearRangeRef
+        .doc(Cname)
+        .set({ timestamp })
+        .then(() => {
+          log(Div);
+          log(AcademicYear);
+          return yearRangeRef
+            .doc(Cname)
+            .collection(`${AcademicYear}`)
+            .doc(Div)
+            .set({ timestamp });
+        })
+        .then(() => {
+          log("===============");
+          return yearRangeRef
+            .doc(Cname)
+            .collection(`${AcademicYear}`)
+            .doc(Div)
+            .collection(dateFormat)
+            .doc(`${ProfId2}`)
+            .set({ sub: SubName, time: Time, room: RoomNo });
+        })
+        .catch((error) => {
+          console.error("Error adding timestamp: ", error);
+        });
+
       console.log("4" + studentIds);
       studentIds.forEach((student) => {
         const { StudID, status } = student;
         const docRef = app.locals.firebaseDb
-          .collection(`${yearRange}`)
-          .doc(`${Cname}`)
+          .collection(yearRange)
+          .doc(Cname)
           .collection(`${AcademicYear}`)
-          .doc(`${Div}`)
-          .collection(`${dateFormat}`)
-          .doc(`${ProfId}`)
-          .collection(`${SubName}`)
-          .doc(`${StudID}`);
+          .doc(Div)
+          .collection(dateFormat)
+          .doc(ProfId2)
+          .collection(SubName)
+          .doc(StudID);
 
         batch.set(docRef, { status });
       });
-      batch
+      await batch
         .commit()
         .then(() => {
           console.log("Batch write successful!");
@@ -173,7 +214,11 @@ async function checkRunTime() {
     timeUntilNextRun.setHours(0, 0, 0, 0);
     const timeToWait = timeUntilNextRun - now;
 
-    console.log(`Current time is ${now}, waiting ${timeToWait / (60 * 1000)} minutes until next run...`);
+    console.log(
+      `Current time is ${now}, waiting ${
+        timeToWait / (60 * 1000)
+      } minutes until next run...`
+    );
 
     setTimeout(() => {
       checkRunTime();
@@ -181,12 +226,12 @@ async function checkRunTime() {
   }
 }
 
-// checkRunTime();
+checkRunTime();
 
-// setInterval(() => {
-//   checkRunTime();
-// }, 60 * 60 * 1000); 
-
+setInterval(() => {
+  console.log("fsaaaaaaaaaaaaaaaaaaa");
+  checkRunTime();
+}, 60 * 60 * 1000);
 
 //setting port
 const port = 3000;

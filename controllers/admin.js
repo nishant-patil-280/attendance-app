@@ -1244,8 +1244,8 @@ const saveTimetableDetails = async (req, res,intParam) => {
     try {
 
         await req.app.locals.pool.execute(
-          "UPDATE timetable SET Division = ?, Cname = ?, AcademicYear = ?, Sem = ?, Day = ?, StartTime = ?, EndTime = ?, SubID = ? WHERE lecid = ?",
-          [req.body.Division,req.body.Cname,req.body.AcademicYear,req.body.Sem, req.body.Day, req.body.StartTime, req.body.EndTime,req.body.SubID,req.body.LecID]
+          "UPDATE timetable SET RoomNo = ?, Division = ?, Cname = ?, AcademicYear = ?, Sem = ?, Day = ?, StartTime = ?, EndTime = ?, SubID = ? WHERE lecid = ?",
+          [req.body.RoomNo, req.body.Division,req.body.Cname,req.body.AcademicYear,req.body.Sem, req.body.Day, req.body.StartTime, req.body.EndTime,req.body.SubID,req.body.LecID]
         );
       
     
@@ -1278,8 +1278,9 @@ const saveTimetableDetails = async (req, res,intParam) => {
     try {
 
       await req.app.locals.pool.execute(
-        "INSERT INTO timetable (LecID, Division, Cname, AcademicYear, Sem, Day, StartTime, EndTime, SubID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [req.body.LecID, req.body.Division,req.body.Cname,req.body.AcademicYear,req.body.Sem, req.body.Day, req.body.StartTime, req.body.EndTime,req.body.SubID]
+        "INSERT INTO timetable (LecID,RoomNo, Division, Cname, AcademicYear, Sem, Day, StartTime, EndTime, SubID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [req.body.LecID,req.body.RoomNo,
+           req.body.Division,req.body.Cname,req.body.AcademicYear,req.body.Sem, req.body.Day, req.body.StartTime, req.body.EndTime,req.body.SubID]
       );
     
         

@@ -75,7 +75,7 @@ async function getTodaysTimeTable() {
   var today = "Tuesday"; //replace here code to get todays timetable
   var year = date.getFullYear();
   const isAfterJuly1 = date.getMonth() >= 6;
-  
+
   let yearRange;
   if (isAfterJuly1) {
     yearRange = `${year}-${year + 1}`;
@@ -190,6 +190,7 @@ async function getTodaysTimeTable() {
     console.log(err);
   }
 }
+const today = new Date();
 
 async function checkRunTime() {
   const now = new Date();
@@ -243,4 +244,4 @@ setInterval(() => {
 //setting port
 const port = process.env.PORT;
 //starting the app
-app.listen(port, console.log(`Server is listening on port ${port}...`));
+app.listen(port, console.log(`Server is listening on port ${port}... ${today}`));

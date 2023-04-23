@@ -190,7 +190,7 @@ async function getTodaysTimeTable() {
     console.log(err);
   }
 }
-const today = new Date();
+const today = new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
 
 async function checkRunTime() {
   const now = new Date();

@@ -194,7 +194,9 @@ const today = new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
 
 async function checkRunTime() {
   const now = new Date();
+  now.setHours(now.getHours + 5);
   const currentHour = now.getHours();
+  //currentHour.setHours(currentHour + 5)
 
   // Read the last run time from the file
   let lastRunTime = null;

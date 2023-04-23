@@ -193,10 +193,17 @@ async function getTodaysTimeTable() {
 const today = new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
 
 async function checkRunTime() {
-  const now = new Date();
-  now.setHours(now.getHours + 5);
-  const currentHour = now.getHours();
+  // const now = new Date();
+  // now.setHours(now.getHours + 5);
+  // const currentHour = now.getHours();
   //currentHour.setHours(currentHour + 5)
+
+  var dateUTC = new Date();
+  var dateUTC = dateUTC.getTime() 
+  var now = new Date(dateUTC);
+//date shifting for IST timezone (+5 hours and 30 minutes)
+  now.setHours(now.getHours() + 5); 
+  now.setMinutes(now.getMinutes() + 30);
 
   // Read the last run time from the file
   let lastRunTime = null;

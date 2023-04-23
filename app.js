@@ -29,7 +29,6 @@ admin.initializeApp({
 const firebaseDb = admin.firestore();
 //connecting mysql -used xampp mysl
 const pool = mysql.createPool({
-  uri: process.env.URL,
   host: process.env.HOST,
   user: process.env.USER,
   password: process.env.PASS,

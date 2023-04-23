@@ -29,7 +29,7 @@ admin.initializeApp({
 const firebaseDb = admin.firestore();
 //connecting mysql -used xampp mysl
 const pool = mysql.createPool({
-  
+
   port: process.env.DB_PORT,
   host: process.env.HOST,
   user: process.env.USER,
@@ -65,6 +65,7 @@ app.use("/api/v1/students", students);
 app.use("/api/v1/professors",professors)
 app.use("/api/v1/admin", admin_2);
 app.get("/", function(req, res){
+  
   res.render("index");
 });
 

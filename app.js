@@ -116,11 +116,11 @@ async function getTodaysTimeTable() {
       console.log(SubName);
       Time = rows[index].StartTime + "-" + rows[index].EndTime;
       const [rowsStudent] = await pool.execute(
-        "SELECT StudID, Firstname, Lastname, RollNo, Division, Cname, Sem, AcademicYear FROM StudDetails WHERE Division = ? AND Cname = ? AND Sem = ? AND AcademicYear = ?",
+        "SELECT StudID, Firstname, Lastname, RollNo, Division, Cname, Sem, AcademicYear FROM studdetails WHERE Division = ? AND Cname = ? AND Sem = ? AND AcademicYear = ?",
         [Div, Cname, Sem, AcademicYear]
       );
       const [profName] = await pool.execute(
-        "SELECT Firstname, Lastname FROM ProfDetails WHERE ProfID = ? ",
+        "SELECT Firstname, Lastname FROM profdetails WHERE ProfID = ? ",
         [ProfId]
       );
       console.log(profName);

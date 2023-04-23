@@ -5,8 +5,18 @@ const mysql = require("mysql2/promise");
 const students = require("./router/student");
 const professors = require("./router/professor");
 const login = require("./router/login");
+const admin_2 = require("./router/admin");
 const admin = require("firebase-admin");
 require("dotenv").config();
+
+//admin dashboard code
+const bodyParser = require("body-parser");
+const ejs = require("ejs");
+
+app.set('view engine', 'ejs');
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static("public"));
 
 // const serviceAccount =JSON.parse( process.env.FireBase_Secret);
 var serviceAccount = require("./attendance-app-b667e-firebase-adminsdk-s4efb-b381a2c7c7.json");
@@ -22,7 +32,7 @@ const pool = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "root",
-  database: "geofence",
+  database: "GeoFence",
   waitForConnections: true,
   connectionLimit: 100,
   queueLimit: 0,
@@ -51,6 +61,7 @@ app.use(express.json());
 app.use("/api/v1/login", login);
 app.use("/api/v1/students", students);
 app.use("/api/v1/professors",professors)
+app.use("/api/v1/admin", admin_2);
 
 //script to generate timetable daily
 async function getTodaysTimeTable() {
@@ -218,6 +229,7 @@ async function checkRunTime() {
 checkRunTime();
 
 setInterval(() => {
+  console.log("fsaaaaaaaaaaaaaaaaaaa");
   checkRunTime();
 }, 60 * 60 * 1000);
 

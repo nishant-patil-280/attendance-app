@@ -51,4 +51,40 @@ const loginUser  = async (req,res,intParam) =>{
     
 };
 
-module.exports = {loginUser: loginUser};
+const loginUserAdmin  = async (req,res,intParam) =>{
+  var data = req.body;
+  console.log(data);
+
+  try {
+    const [rows, fields] = await req.app.locals.pool.execute(
+      "SELECT * FROM adminuser"
+    );
+    console.log(rows[0].AdminID);
+      if (req.body.username == rows[0].AdminID) {
+        if (req.body.password == rows[0].Password) {
+          res.render("index");       
+        }
+        else{
+          res.render("login"); 
+          console.log("Incorrect pass");
+        }
+      }
+      else{
+        res.render("login"); 
+        console.log("Incorrect user");
+      }
+    
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+  
+
+  
+
+
+
+};
+
+
+module.exports = {loginUser: loginUser, loginUserAdmin};

@@ -63,6 +63,9 @@ app.use("/api/v1/login", login);
 app.use("/api/v1/students", students);
 app.use("/api/v1/professors",professors)
 app.use("/api/v1/admin", admin_2);
+app.get("/", function(req, res){
+  res.render("index");
+});
 
 //script to generate timetable daily
 async function getTodaysTimeTable() {

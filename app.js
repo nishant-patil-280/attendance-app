@@ -29,7 +29,6 @@ admin.initializeApp({
 const firebaseDb = admin.firestore();
 //connecting mysql -used xampp mysl
 const pool = mysql.createPool({
-  port: process.env.PORT,
   host: process.env.HOST,
   user: process.env.USER,
   password: process.env.PASS,
@@ -238,6 +237,6 @@ setInterval(() => {
 }, 60 * 60 * 1000);
 
 //setting port
-const port = 3000;
+const port = process.env.PORT;
 //starting the app
 app.listen(port, console.log(`Server is listening on port ${port}...`));

@@ -65,7 +65,7 @@ app.use("/api/v1/students", students);
 app.use("/api/v1/professors",professors)
 app.use("/api/v1/admin", admin_2);
 app.get("/", function(req, res){
-  
+
   res.render("index");
 });
 
@@ -75,6 +75,7 @@ async function getTodaysTimeTable() {
   var today = "Tuesday"; //replace here code to get todays timetable
   var year = date.getFullYear();
   const isAfterJuly1 = date.getMonth() >= 6;
+  
   let yearRange;
   if (isAfterJuly1) {
     yearRange = `${year}-${year + 1}`;

@@ -202,6 +202,7 @@ async function checkRunTime() {
   var dateUTC = dateUTC.getTime() 
   var now = new Date(dateUTC);
 //date shifting for IST timezone (+5 hours and 30 minutes)
+  now.setDate(now.getDate + 1);
   now.setHours(now.getHours() + 5); 
   currentHour = now.getHours();
   now.setMinutes(now.getMinutes() + 30);

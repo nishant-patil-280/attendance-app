@@ -1,5 +1,5 @@
-create database GeoFence;
-use GeoFence;
+-- create database GeoFence;
+-- use GeoFence;
 
 #Creating tables for Student, Professor and Admin Login
 

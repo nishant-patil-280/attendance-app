@@ -184,7 +184,7 @@ const searchStudents = async (req, res, intParam) => {
       );
       
       if (rows.length > 0) {
-        if (rows[0]) {
+        if (rows[0].Birthdate) {
           var olddate = rows[0].Birthdate;
           olddate.setHours(12, 0, 0, 0)
   

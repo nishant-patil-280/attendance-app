@@ -29,9 +29,9 @@ admin.initializeApp({
 const firebaseDb = admin.firestore();
 //connecting mysql -used xampp mysl
 const pool = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "root",
+  host: "attendanceappdb.cgodbjaexh7a.us-east-1.rds.amazonaws.com",
+  user: "admin",
+  password: "AdminAttend",
   database: "GeoFence",
   waitForConnections: true,
   connectionLimit: 100,

@@ -93,7 +93,7 @@ async function getTodaysTimeTable() {
   try {
     let index = 0;
     const [rows, fields] = await pool.execute(
-      "SELECT TimeTable.RoomNo, Timetable.Division, Timetable.AcademicYear, Timetable.Sem, Timetable.Day, Timetable.StartTime, Timetable.EndTime, Subject.SubName, Subject.Cname, Timetable.ProfID FROM Timetable JOIN Subject ON Timetable.SubID = Subject.SubID WHERE Timetable.Day = ?",
+      "SELECT timetable.RoomNo, timetable.Division, timetable.AcademicYear, timetable.Sem, timetable.Day, timetable.StartTime, timetable.EndTime, subject.SubName, subject.Cname, timetable.ProfID FROM timetable JOIN subject ON timetable.SubID = subject.SubID WHERE timetable.Day = ?",
       [today]
     );
     console.log("Total rows today:" + rows.length);

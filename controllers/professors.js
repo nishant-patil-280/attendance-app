@@ -35,7 +35,7 @@ const getProfessorLectures = async (req, res) => {
 
   try {
     const [rows, fields] = await await req.app.locals.pool.execute(
-      "SELECT TimeTable.RoomNo, TimeTable.Division, TimeTable.AcademicYear, TimeTable.Sem, TimeTable.Day, TimeTable.StartTime, TimeTable.EndTime, Subject.SubName, Subject.Cname, TimeTable.ProfID FROM TimeTable JOIN Subject ON TimeTable.SubID = Subject.SubID WHERE TimeTable.ProfID = ? AND TimeTable.Day = ?",
+      "SELECT timetable.RoomNo, timetable.Division, timetable.AcademicYear, timetable.Sem, timetable.Day, timetable.StartTime, timetable.EndTime, subject.SubName, subject.Cname, timetable.ProfID FROM timetable JOIN subject ON timetable.SubID = subject.SubID WHERE timetable.ProfID = ? AND timetable.Day = ?",
       [
         professor_id,
         //pass here today instead

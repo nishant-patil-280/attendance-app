@@ -193,7 +193,7 @@ async function getTodaysTimeTable() {
 const today = new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
 
 async function checkRunTime() {
-  const now = new Date();
+  const now = new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
   const currentHour = now.getHours();
 
   // Read the last run time from the file

@@ -72,7 +72,10 @@ app.get("/", function(req, res){
 //script to generate timetable daily
 async function getTodaysTimeTable() {
   let date = new Date();
-  var today = "Tuesday"; //replace here code to get todays timetable
+  let options1 = { weekday: 'long' };
+  let today = date.toLocaleString('en-US', options1);
+  console.log(today + "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+  // var today = "Tuesday"; //replace here code to get todays timetable
   var year = date.getFullYear();
   const isAfterJuly1 = date.getMonth() >= 6;
 

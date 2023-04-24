@@ -2,7 +2,9 @@ const fs = require('fs');
 
 async function getTodaysTimeTable(app) {
   let date = new Date();
-  var today = "Tuesday"; //replace here code to get todays timetable
+  let options1 = { weekday: 'long' };
+  let today = date.toLocaleString('en-US', options1);
+  // var today = "Tuesday"; //replace here code to get todays timetable
   var year = date.getFullYear();
   const isAfterJuly1 = date.getMonth() >= 6;
   let yearRange;

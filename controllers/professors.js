@@ -39,7 +39,7 @@ const getProfessorLectures = async (req, res) => {
       [
         professor_id,
         //pass here today instead
-        "tuesday",
+        today,
       ]
     );
     console.log(rows.length.toString());

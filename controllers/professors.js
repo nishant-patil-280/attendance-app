@@ -31,6 +31,7 @@ const getProfessorLectures = async (req, res) => {
   console.log("yeyeyeeyey");
   const professor_id = req.user;
   const today = req.body.today;
+  
   console.log(today);
 
   try {
